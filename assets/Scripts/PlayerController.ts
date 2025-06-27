@@ -1,4 +1,4 @@
-import { _decorator, Component, EventMouse, Input, input, Node, Vec3 } from 'cc';
+import { _decorator, Component, EventMouse, Input, input, Node, Vec3, Animation } from 'cc';
 const { ccclass, property } = _decorator;
 
 export const BLOCK_SIZE = 40; // 每个方块的大小
@@ -12,6 +12,10 @@ export class PlayerController extends Component {
     private _curPos: Vec3 = new Vec3();
     private _deltaPos: Vec3 = new Vec3(0, 0, 0);
     private _targetPos: Vec3 = new Vec3();
+
+    @property(Animation)
+    BodyAnim: Animation = null;
+
 
     start() {
         input.on(Input.EventType.MOUSE_UP, this.onMouseUp, this);
@@ -50,9 +54,24 @@ export class PlayerController extends Component {
         this._startJump = true;  // 标记开始跳跃
         this._jumpStep = step; // 跳跃的步数 1 或者 2
         this._curJumpTime = 0; // 重置开始跳跃的时间
-        this._curJumpSpeed = this._jumpStep / this._jumpTime; // 根据时间计算出速度
+        
+
+        const clipName = this._jumpStep == 1 ? 'oneStep' : 'twoStep';
+        const state = this.BodyAnim.getState(clipName);
+        this._jumpTime = state.duration; // 获取动画的持续时间
+        this._curJumpSpeed = this._jumpStep*BLOCK_SIZE / this._jumpTime; // 根据时间计算出速度
+
         this.node.getPosition(this._curPos); // 获取角色当前的位置
-        Vec3.add(this._targetPos, this._curPos, new Vec3(this._jumpStep*BLOCK_SIZE, 0, 0));    // 计算出目标位置
+        Vec3.add(this._targetPos, this._curPos, new Vec3(this._jumpStep * BLOCK_SIZE, 0, 0));    // 计算出目标位置
+
+        // 播放跳跃动画
+        if (this.BodyAnim) {
+            if (step === 1) {
+                this.BodyAnim.play('oneStep');
+            } else if (step === 2) {
+                this.BodyAnim.play('twoStep');
+            }
+        }
     }
 
 
