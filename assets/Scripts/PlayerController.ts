@@ -13,12 +13,28 @@ export class PlayerController extends Component {
     private _deltaPos: Vec3 = new Vec3(0, 0, 0);
     private _targetPos: Vec3 = new Vec3();
 
+    _curMoveIndex: number = 0; // 当前移动的索引
+
     @property(Animation)
     BodyAnim: Animation = null;
 
 
     start() {
-        input.on(Input.EventType.MOUSE_UP, this.onMouseUp, this);
+        // input.on(Input.EventType.MOUSE_UP, this.onMouseUp, this);
+    }
+
+    setInputActive(active: boolean) {
+        if (active) {
+            input.on(Input.EventType.MOUSE_UP, this.onMouseUp, this);
+        } else {
+            input.off(Input.EventType.MOUSE_UP, this.onMouseUp, this);
+        }
+    }
+
+    reset() {
+        this._curMoveIndex = 0;
+        this.node.getPosition(this._curPos);
+        this._targetPos.set(0, 0, 0); // 重置目标位置
     }
 
     update(deltaTime: number) {
@@ -54,12 +70,12 @@ export class PlayerController extends Component {
         this._startJump = true;  // 标记开始跳跃
         this._jumpStep = step; // 跳跃的步数 1 或者 2
         this._curJumpTime = 0; // 重置开始跳跃的时间
-        
+
 
         const clipName = this._jumpStep == 1 ? 'oneStep' : 'twoStep';
         const state = this.BodyAnim.getState(clipName);
         this._jumpTime = state.duration; // 获取动画的持续时间
-        this._curJumpSpeed = this._jumpStep*BLOCK_SIZE / this._jumpTime; // 根据时间计算出速度
+        this._curJumpSpeed = this._jumpStep * BLOCK_SIZE / this._jumpTime; // 根据时间计算出速度
 
         this.node.getPosition(this._curPos); // 获取角色当前的位置
         Vec3.add(this._targetPos, this._curPos, new Vec3(this._jumpStep * BLOCK_SIZE, 0, 0));    // 计算出目标位置
