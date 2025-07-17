@@ -34,6 +34,7 @@ export class GameManager extends Component {
 
     start() {
         this.setCurState(GameState.GS_INIT); // 设置初始状态
+        this.playerCtrl?.node.on('JumpEnd', this.onPlayerJumpEnd, this); // 监听玩家跳跃结束事件
     }
 
     init() {
@@ -121,5 +122,23 @@ export class GameManager extends Component {
 
     onStartButtonClicked() {
         this.setCurState(GameState.GS_PLAYING);
+    }
+
+    onPlayerJumpEnd(moveIndex: number) {
+        if (this.stepsLabel) {
+            this.stepsLabel.string = '' + (moveIndex >= this.roadLength ? this.roadLength : moveIndex);
+        }
+        this.checkResult(moveIndex);
+    }
+
+    checkResult(moveIndex: number) {
+        if (moveIndex < this.roadLength) {
+            if (this._road[moveIndex] == BlockType.BT_NONE) {   //跳到了空方块上
+
+                this.setCurState(GameState.GS_INIT)
+            }
+        } else {    // 跳过了最大长度            
+            this.setCurState(GameState.GS_INIT);
+        }
     }
 }

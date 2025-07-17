@@ -44,6 +44,7 @@ export class PlayerController extends Component {
                 // end 
                 this.node.setPosition(this._targetPos); // 强制位置到终点
                 this._startJump = false;               // 清理跳跃标记
+                this.onOnceJumpEnd(); // 通知跳跃结束
             } else {
                 // tween
                 this.node.getPosition(this._curPos);
@@ -88,6 +89,12 @@ export class PlayerController extends Component {
                 this.BodyAnim.play('twoStep');
             }
         }
+
+        this._curMoveIndex += step;
+    }
+
+    onOnceJumpEnd() {
+        this.node.emit('JumpEnd', this._curMoveIndex);
     }
 
 
