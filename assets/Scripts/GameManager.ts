@@ -1,4 +1,4 @@
-import { _decorator, CCInteger, Component, Node, Prefab, instantiate, Game, Label, Vec3 } from 'cc';
+import { _decorator, CCInteger, Component, Node, Prefab, instantiate, Game, Label, Vec3, AudioSource } from 'cc';
 import { BLOCK_SIZE, PlayerController } from './PlayerController';
 const { ccclass, property } = _decorator;
 
@@ -31,6 +31,9 @@ export class GameManager extends Component {
 
     @property({ type: Label })
     public stepsLabel: Label = null; // 步数标签
+
+    @property({type: AudioSource})
+    public backMusic: AudioSource = null; // 背景音乐
 
     start() {
         this.setCurState(GameState.GS_INIT); // 设置初始状态
@@ -115,6 +118,7 @@ export class GameManager extends Component {
                 }, 0.1);
                 break;
             case GameState.GS_END:
+                
                 // 游戏结束逻辑
                 break;
         }
@@ -122,6 +126,7 @@ export class GameManager extends Component {
 
     onStartButtonClicked() {
         this.setCurState(GameState.GS_PLAYING);
+        this.backMusic?.play(); // 播放背景音乐
     }
 
     onPlayerJumpEnd(moveIndex: number) {
@@ -134,7 +139,7 @@ export class GameManager extends Component {
     checkResult(moveIndex: number) {
         if (moveIndex < this.roadLength) {
             if (this._road[moveIndex] == BlockType.BT_NONE) {   //跳到了空方块上
-
+                this.backMusic?.stop(); // 停止背景音乐
                 this.setCurState(GameState.GS_INIT)
             }
         } else {    // 跳过了最大长度            
