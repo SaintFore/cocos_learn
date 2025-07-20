@@ -1,4 +1,4 @@
-import { _decorator, Component, EventMouse, Input, input, Node, Vec3, Animation } from 'cc';
+import { _decorator, Component, EventMouse, Input, input, Node, Vec3, Animation, AudioSource } from 'cc';
 const { ccclass, property } = _decorator;
 
 export const BLOCK_SIZE = 40; // 每个方块的大小
@@ -18,6 +18,12 @@ export class PlayerController extends Component {
     @property(Animation)
     BodyAnim: Animation = null;
 
+    @property(AudioSource)
+    JumpAudio: AudioSource = null;
+
+    onLoad() {
+        
+    }
 
     start() {
         // input.on(Input.EventType.MOUSE_UP, this.onMouseUp, this);
@@ -57,9 +63,11 @@ export class PlayerController extends Component {
 
     onMouseUp(event: EventMouse) {
         if (event.getButton() === 0) {
+            this.JumpAudio.play();
             this.jumpByStep(1);
         }
         else if (event.getButton() == 2) {
+            this.JumpAudio.play();
             this.jumpByStep(2);
         }
     }
