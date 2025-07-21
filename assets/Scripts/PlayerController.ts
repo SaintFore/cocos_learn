@@ -63,11 +63,9 @@ export class PlayerController extends Component {
 
     onMouseUp(event: EventMouse) {
         if (event.getButton() === 0) {
-            this.JumpAudio.play();
             this.jumpByStep(1);
         }
         else if (event.getButton() == 2) {
-            this.JumpAudio.play();
             this.jumpByStep(2);
         }
     }
@@ -97,6 +95,13 @@ export class PlayerController extends Component {
                 this.BodyAnim.play('twoStep');
             }
         }
+
+        // 播放跳跃音效
+        this.scheduleOnce(() => {
+            if (this.JumpAudio) {
+                this.JumpAudio.play();
+            }
+        }, this._jumpTime);
 
         this._curMoveIndex += step;
     }
